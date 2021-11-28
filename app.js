@@ -1,35 +1,37 @@
+// Membuat secara lebih ringkas dibanding appcopy.js
 const http = require("http");
 const fs = require("fs");
-
 const port = 3000;
+
+// buat fungsi render untuk membuka halaman
+const renderHTML = (path, res) => {
+    fs.readFile(path, (err, data) => {
+        if (err) {
+            res.writeHead(404);
+            res.write("Error: File not found");
+        } else {
+            res.write(data);
+        }
+        res.end();
+    });
+};
 
 http
     .createServer((req, res) => {
-        // 200 adalah status code. jadi jika status code yg dikembalikan 200, maka jalankan perintah Content-Type
-        res.writeHead(200, {
-            "Content-Type": "text/html"
-        });
         const url = req.url;
-        // ketika masuk ke halaman about, maka tampilkan perintah selanjutnya
+
+        res.writeHead(200, {
+            "Content-Type": "text/html",
+        });
         if (url === "/about") {
-            res.write("<h1>Ini adalah halaman about</h1>");
-            // ketika masuk ke halaman contact, maka tampilkan perintah selanjutnya
+            renderHTML("./about.html", res)
         } else if (url === "/contact") {
-            res.write("<h1>Ini adalah halaman contact</h1>");
-            // dan else, tampilkan perintah selanjutnya
+            renderHTML("./contact.html", res);
         } else {
-            // menampilkan halaman default ketika menjalankan program. yaitu halaman index
-            fs.readFile("./index.html", (err, data) => {
-                if (err) {
-                    res.writeHead(404);
-                    res.write("file not found");
-                } else {
-                    res.write(data);
-                }
-                res.end;
-            })
+            renderHTML("./index.html", res);
         }
     })
+
     .listen(port, () => {
-        console.log(`Server is listening  on port ${port}..`);
+        console.log(`Server is listening on port ${port}`);
     })
